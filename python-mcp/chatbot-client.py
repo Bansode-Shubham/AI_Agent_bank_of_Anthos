@@ -2,7 +2,7 @@ import asyncio
 from mcp import ClientSession
 from mcp.client.sse import sse_client
 
-BANK_SERVER_URL = "http://localhost:8888/sse"
+BANK_SERVER_URL = "https://reimagined-space-train-x757667p7p63p645-8888.app.github.dev/sse"
 # print(httpx.get(BANK_SERVER_URL))
 
 async def interactive_chat():
@@ -11,6 +11,10 @@ async def interactive_chat():
             await session.initialize()
 
             print("Bank Chatbot 🤖 (type 'exit' to quit)")
+            tools_result = await session.list_tools()
+            print("Available tools:")
+            for tool in tools_result.tools:
+                print(f"  - {tool.name}")
 
             while True:
                 user_input = input("You: ")

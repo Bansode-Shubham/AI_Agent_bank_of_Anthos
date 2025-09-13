@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import httpx
 
 mcp = FastMCP("Bank Server",
-    host="localhost",
+    host="0.0.0.0",
     port=8888
 )
 
@@ -35,21 +35,45 @@ def get_balance() -> str:
     return "Balance not found in page."
 
 @mcp.tool()
-def send_payment(account_num: str, contact_account_num: str, contact_label: str, amount: str, uuid: str) -> str:
+def send_payment(
+    account_num: str,
+    amount: str,
+    uuid: str,
+    contact_account_num: str = None,
+    contact_label: str = None,
+) -> str:
+    """Send a payment to an account.
+
+    Required:
+    - account_num: The recipient account number.
+    - amount: The amount to send.
+    - uuid: any random uuid of format 'fe850d76-1a42-4129-b0b7-be0b23a90995 , this should be randomly generated newly everytime as duplicate transactions may fail the payment  'fe850d76-1a42-4129-b0b7-be0b23a90995'
+
+    Optional:
+    - contact_account_num: The account number to debit from.
+    - contact_label: Label or name of the recipient.
+    """
+
+    # Build payload dynamically
+    payload = {
+        "account_num": account_num,
+        "amount": amount,
+        "uuid": uuid
+    } 
+    if contact_account_num:
+        payload["contact_account_num"] = contact_account_num
+    if contact_label:
+        payload["contact_label"] = contact_label
+
     resp = session.post(
         BASE_URL + "/payment",
-        data={
-            "account_num": account_num,
-            "contact_account_num": contact_account_num,
-            "contact_label": contact_label,
-            "amount": amount,
-            "uuid": uuid,
-        },
+        data=payload,
         headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
+
     if resp.status_code in (200, 303):
-        return f"Payment success: {resp.text[:200]}"
-    return f"Payment failed: {resp.status_code} {resp.text[:200]}"
+        return f"Payment success: {resp.text[:6000]}"
+    return f"Payment failed: {resp.status_code} {resp.text[:6000]}"
 
 if __name__ == "__main__":
     # instead of mcp.run() over stdio:
