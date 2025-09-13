@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "bank-server": {
+      "url": "http://localhost:8888/sse"
+    }
+  }
+}

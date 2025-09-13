@@ -1,0 +1,7 @@
+requests
+beautifulsoup4
+mcp[cli]
+mcp_use
+httpx
+openai
+nest_asyncio
